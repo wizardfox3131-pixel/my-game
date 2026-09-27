@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>抽名字游戏</title>
+<style>
+body{font-family:sans-serif;text-align:center;padding:50px;background:#f0f0f0}
+button{font-size:24px;padding:15px 40px;cursor:pointer;margin:20px}
+#result{font-size:36px;margin:30px;min-height:50px}
+#cp{font-size:20px;color:#e91e63;margin-top:20px}
+</style>
+</head>
+<body>
+<h1>抽名字游戏</h1>
+<button onclick="draw()">抽一个</button>
+<div id="result"></div>
+<div id="cp"></div>
+<script>
+const names = ["许翌煌","陈劲熙","林健哲","黄向阳","许瑈晅","蔡佳恩","陈楽颐","刘艺渲","戴玉琳"];
+const cps = {
+  "林健哲":"蔡佳恩",
+  "蔡佳恩":"林健哲",
+  "许翌煌":"许瑈晅",
+  "陈劲熙":"许瑈晅",
+  "许瑈晅":["许翌煌","陈劲熙"]
+};
+function draw(){
+  const n = names[Math.floor(Math.random()*names.length)];
+  document.getElementById("result").textContent = n;
+  let msg = "";
+  if(cps[n]){
+    if(Array.isArray(cps[n])){
+      msg = "有机会解锁CP：" + cps[n].join(" / ");
+    }else{
+      msg = "有机会解锁CP：" + cps[n];
+    }
+  }
+  document.getElementById("cp").textContent = msg;
+}
+</script>
+</body>
+</html>
