@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>照片回忆</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 48px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            overflow-x: hidden;
+            color: #fff;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, .3);
+        }
+        .gallery {
+            width: min(1080px, 100%);
+            padding: 24px 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, .15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+            backdrop-filter: blur(10px);
+        }
+        marquee {
+            display: block;
+            height: 232px;
+        }
+        marquee + marquee { margin-top: 18px; }
+        .photo {
+            width: 172px;
+            height: 216px;
+            margin: 8px 10px;
+            border: 3px solid rgba(255, 255, 255, .85);
+            border-radius: 16px;
+            object-fit: cover;
+            box-shadow: 0 8px 22px rgba(25, 16, 65, .28);
+            transition: transform .25s ease;
+        }
+        .photo:hover { transform: scale(1.04); }
+        @media (max-width: 600px) {
+            body { padding: 32px 12px; gap: 22px; }
+            h1 { font-size: 1.8rem; }
+            .gallery { padding: 16px 0; border-radius: 18px; }
+            marquee { height: 190px; }
+            .photo { width: 138px; height: 174px; margin: 8px 7px; }
+        }
+    </style>
+</head>
+<body>
+    <h1>照片回忆</h1>
+    <main class="gallery" aria-label="滚动照片相册">
+        <marquee behavior="alternate" direction="left" scrollamount="5" onmouseover="this.stop()" onmouseout="this.start()">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.00 AM.jpeg" alt="照片 1">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.01 AM (1).jpeg" alt="照片 2">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.01 AM (2).jpeg" alt="照片 3">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.01 AM.jpeg" alt="照片 4">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM (1).jpeg" alt="照片 5">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM (2).jpeg" alt="照片 6">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM (3).jpeg" alt="照片 7">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM.jpeg" alt="照片 8">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.03 AM.jpeg" alt="照片 9">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.04 AM.jpeg" alt="照片 10">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.05 AM (1).jpeg" alt="照片 11">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.05 AM (2).jpeg" alt="照片 12">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.05 AM.jpeg" alt="照片 13">
+        </marquee>
+        <marquee behavior="alternate" direction="right" scrollamount="4" onmouseover="this.stop()" onmouseout="this.start()">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.05 AM.jpeg" alt="照片 13">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.05 AM (2).jpeg" alt="照片 12">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.05 AM (1).jpeg" alt="照片 11">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.04 AM.jpeg" alt="照片 10">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.03 AM.jpeg" alt="照片 9">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM.jpeg" alt="照片 8">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM (3).jpeg" alt="照片 7">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM (2).jpeg" alt="照片 6">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.02 AM (1).jpeg" alt="照片 5">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.01 AM.jpeg" alt="照片 4">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.01 AM (2).jpeg" alt="照片 3">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.01 AM (1).jpeg" alt="照片 2">
+            <img class="photo" src="WhatsApp Image 2026-09-27 at 11.59.00 AM.jpeg" alt="照片 1">
+        </marquee>
+    </main>
+</body>
+</html>
