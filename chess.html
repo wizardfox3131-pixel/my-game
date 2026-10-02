@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>国际象棋-西洋棋</title>
+  <style>
+    :root{--ink:#1d2330;--paper:#fff8ed;--gold:#d39a42;--wine:#5c2634;--deep:#202b3b;--light:#e9d7bc;--dark:#987255}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;color:var(--ink);font-family:"Microsoft YaHei",system-ui,sans-serif;background:radial-gradient(circle at 20% 0,#53637b 0,transparent 32%),linear-gradient(145deg,#182331,#5d3640);padding:26px 16px}
+    .wrap{max-width:1120px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:22px;color:#fff}.brand small{display:block;color:#e8c47d;letter-spacing:3px}.brand h1{font-size:clamp(1.6rem,4vw,2.5rem);margin:4px 0 0;letter-spacing:2px}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a,.mode button,.tool{border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:9px 14px;color:white;background:rgba(255,255,255,.09);font:inherit;text-decoration:none;cursor:pointer;transition:.18s}.nav a:hover,.mode button:hover,.tool:hover{background:rgba(255,255,255,.22)}
+    main{display:grid;grid-template-columns:minmax(300px,640px) minmax(260px,1fr);gap:24px;align-items:start}.board-shell{padding:clamp(10px,2.4vw,20px);border:1px solid rgba(255,255,255,.36);border-radius:22px;background:rgba(255,248,237,.18);box-shadow:0 24px 55px #0b111c77;backdrop-filter:blur(10px)}
+    #board{width:min(100%,640px);aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);border:7px solid #4d3029;box-shadow:0 7px 16px #160e0c88}.sq{position:relative;border:0;display:grid;place-items:center;padding:0;font-size:clamp(1.65rem,7vw,4.7rem);line-height:1;cursor:pointer;user-select:none}.light{background:var(--light)}.dark{background:var(--dark)}.sq::after{content:"";position:absolute;inset:0;pointer-events:none}.sq.selected::after{background:#e5c83766;box-shadow:inset 0 0 0 4px #f6df4e}.sq.legal::after{background:radial-gradient(circle,#27442a99 0 17%,transparent 19%)}.sq.capture::after{box-shadow:inset 0 0 0 5px #b43e37cc}.sq.last::before{content:"";position:absolute;inset:0;background:#f1d45b44}.piece{position:relative;z-index:1;filter:drop-shadow(0 2px 1px #0005)}.white{color:#fffdf6;text-shadow:0 1px #493e33,1px 0 #493e33,-1px 0 #493e33,0 -1px #493e33}.black{color:#252426;text-shadow:0 1px #e4d6b9}
+    .panel{border-radius:22px;background:var(--paper);padding:22px;box-shadow:0 20px 45px #0b111c55}.mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:13px 0 18px}.mode button{color:var(--wine);border-color:#ddc7a8;background:#fff}.mode button.active{color:#fff;background:var(--wine);border-color:var(--wine)}.status{padding:16px;border-radius:14px;background:#f0e2ce;line-height:1.65;font-weight:700}.turn-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#fff;border:1px solid #555;margin:0 7px}.turn-dot.black{background:#222}.tools{display:flex;gap:8px;margin:14px 0}.tool{color:#fff;background:var(--deep);border-color:var(--deep);flex:1}.hint{font-size:.9rem;color:#665b52;margin:10px 0 0;line-height:1.6}.history-title{display:flex;justify-content:space-between;align-items:center;margin-top:18px}.history{height:190px;overflow:auto;background:#fbf3e7;border:1px solid #ead9c2;border-radius:12px;padding:10px 12px;color:#574639;font-family:ui-monospace,monospace;font-size:.88rem}.history div{padding:3px 0;border-bottom:1px solid #eadfce}.history div:last-child{border:0}.footer{text-align:center;color:#e8dfd6;margin-top:20px;font-size:.85rem}
+    @media(max-width:760px){body{padding:16px 10px}.top{align-items:flex-start;flex-direction:column;margin-bottom:16px}main{grid-template-columns:1fr;gap:16px}.panel{padding:17px}.history{height:130px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top"><div class="brand"><small>CHESS CLUB · LOCAL PLAY</small><h1>国际象棋-西洋棋</h1></div><nav class="nav" aria-label="网站导航"><a href="index.html">抽名字游戏</a><a href="记录.html">照片回忆</a><a href="chess.html">国际象棋</a></nav></header>
+    <main>
+      <section class="board-shell" aria-label="国际象棋棋盘"><div id="board"></div></section>
+      <aside class="panel">
+        <strong>选择对局方式</strong>
+        <div class="mode"><button class="active" data-mode="bot">♟ 人机对弈</button><button data-mode="two">♞ 双人对弈</button></div>
+        <div class="status" id="status" aria-live="polite"></div>
+        <div class="tools"><button class="tool" id="undo">↶ 悔棋</button><button class="tool" id="restart">↻ 重新开始</button></div>
+        <p class="hint">点击棋子，再点击高亮格走棋。人机模式中你执白，电脑执黑。支持王车易位、吃过路兵和兵升后；升变默认为后。</p>
+        <div class="history-title"><strong>走子记录</strong><span id="moveCount">0 回合</span></div><div class="history" id="history"><div>棋局准备就绪。</div></div>
+      </aside>
+    </main>
+    <p class="footer">三页已互相连接 · 本地运行，无需联网</p>
+  </div>
+<script>
+(() => {
+  const icons={wK:'♔',wQ:'♕',wR:'♖',wB:'♗',wN:'♘',wP:'♙',bK:'♚',bQ:'♛',bR:'♜',bB:'♝',bN:'♞',bP:'♟'};
+  const value={P:100,N:320,B:330,R:500,Q:900,K:20000}; const files='abcdefgh';
+  const initial=()=>({board:[['bR','bN','bB','bQ','bK','bB','bN','bR'],['bP','bP','bP','bP','bP','bP','bP','bP'],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],[null,null,null,null,null,null,null,null],['wP','wP','wP','wP','wP','wP','wP','wP'],['wR','wN','wB','wQ','wK','wB','wN','wR']],turn:'w',castle:{wK:true,wA:true,wH:true,bK:true,bA:true,bH:true},ep:null});
+  let state=initial(), selected=null, moves=[], history=[], notes=[], mode='bot', thinking=false;
+  const inside=(r,c)=>r>=0&&r<8&&c>=0&&c<8; const enemy=(a,b)=>a&&b&&a[0]!==b[0]; const clone=s=>({board:s.board.map(r=>r.slice()),turn:s.turn,castle:{...s.castle},ep:s.ep?[...s.ep]:null});
+  const coord=([r,c])=>files[c]+(8-r);
+  function push(list,r,c,board,side){if(inside(r,c)&&(!board[r][c]||enemy(board[r][c],side))&&board[r][c]?.[1]!=='K')list.push([r,c]);}
+  function ray(list,r,c,dr,dc,b,side){for(let i=1;inside(r+dr*i,c+dc*i);i++){let p=b[r+dr*i][c+dc*i];if(!p)list.push([r+dr*i,c+dc*i]);else{if(enemy(p,side)&&p[1]!=='K')list.push([r+dr*i,c+dc*i]);break;}}}
+  function attacked(s,r,c,by){const b=s.board,dir=by==='w'?-1:1;for(const dc of[-1,1])if(inside(r-dir,c-dc)&&b[r-dir][c-dc]===by+'P')return true;
+    for(const[dr,dc]of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]])if(inside(r+dr,c+dc)&&b[r+dr][c+dc]===by+'N')return true;
+    for(const[dr,dc,types]of [[1,0,'RQ'],[-1,0,'RQ'],[0,1,'RQ'],[0,-1,'RQ'],[1,1,'BQ'],[1,-1,'BQ'],[-1,1,'BQ'],[-1,-1,'BQ']])for(let i=1;inside(r+dr*i,c+dc*i);i++){let p=b[r+dr*i][c+dc*i];if(p){if(p[0]===by&&types.includes(p[1]))return true;break;}}
+    for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if((dr||dc)&&inside(r+dr,c+dc)&&b[r+dr][c+dc]===by+'K')return true;return false;}
+  function pseudo(s,r,c){const b=s.board,p=b[r][c];if(!p)return[];const side=p[0],t=p[1],list=[],dir=side==='w'?-1:1;
+    if(t==='P'){if(inside(r+dir,c)&&!b[r+dir][c]){list.push([r+dir,c]);if(r===(side==='w'?6:1)&&!b[r+2*dir][c])list.push([r+2*dir,c]);}for(const dc of[-1,1]){if(inside(r+dir,c+dc)&&enemy(b[r+dir][c+dc],side)&&b[r+dir][c+dc][1]!=='K')list.push([r+dir,c+dc]);if(s.ep&&s.ep[0]===r+dir&&s.ep[1]===c+dc)list.push([r+dir,c+dc]);}}
+    if(t==='N')for(const d of [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]])push(list,r+d[0],c+d[1],b,side);
+    if(t==='B'||t==='Q')for(const d of [[1,1],[1,-1],[-1,1],[-1,-1]])ray(list,r,c,d[0],d[1],b,side);
+    if(t==='R'||t==='Q')for(const d of [[1,0],[-1,0],[0,1],[0,-1]])ray(list,r,c,d[0],d[1],b,side);
+    if(t==='K'){for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)if(dr||dc)push(list,r+dr,c+dc,b,side);const home=side==='w'?7:0,opp=side==='w'?'b':'w';if(r===home&&c===4&&!attacked(s,r,c,opp)&&s.castle[side+'K']){if(s.castle[side+'H']&&!b[home][5]&&!b[home][6]&&b[home][7]===side+'R'&&!attacked(s,home,5,opp)&&!attacked(s,home,6,opp))list.push([home,6]);if(s.castle[side+'A']&&!b[home][1]&&!b[home][2]&&!b[home][3]&&b[home][0]===side+'R'&&!attacked(s,home,3,opp)&&!attacked(s,home,2,opp))list.push([home,2]);}}
+    return list;}
+  function apply(s,from,to){const n=clone(s),[r,c]=from,[tr,tc]=to,p=n.board[r][c],side=p[0],captured=n.board[tr][tc];n.board[tr][tc]=p;n.board[r][c]=null;
+    if(p[1]==='P'&&c!==tc&&!captured)n.board[r][tc]=null; if(p[1]==='P'&&(tr===0||tr===7))n.board[tr][tc]=side+'Q';
+    if(p[1]==='K'&&Math.abs(tc-c)===2){const rookC=tc===6?7:0,newC=tc===6?5:3;n.board[tr][newC]=n.board[tr][rookC];n.board[tr][rookC]=null;}
+    if(p==='wK'){n.castle.wK=false;n.castle.wA=false;n.castle.wH=false}if(p==='bK'){n.castle.bK=false;n.castle.bA=false;n.castle.bH=false}if(p==='wR'&&r===7&&c===0)n.castle.wA=false;if(p==='wR'&&r===7&&c===7)n.castle.wH=false;if(p==='bR'&&r===0&&c===0)n.castle.bA=false;if(p==='bR'&&r===0&&c===7)n.castle.bH=false;
+    if(captured==='wR'&&tr===7&&tc===0)n.castle.wA=false;if(captured==='wR'&&tr===7&&tc===7)n.castle.wH=false;if(captured==='bR'&&tr===0&&tc===0)n.castle.bA=false;if(captured==='bR'&&tr===0&&tc===7)n.castle.bH=false;
+    n.ep=p[1]==='P'&&Math.abs(tr-r)===2?[(r+tr)/2,c]:null;n.turn=side==='w'?'b':'w';return n;}
+  function king(s,side){for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(s.board[r][c]===side+'K')return[r,c];return null}
+  function legal(s,side=s.turn){let out=[];for(let r=0;r<8;r++)for(let c=0;c<8;c++)if(s.board[r][c]?.[0]===side)for(const to of pseudo(s,r,c)){const n=apply(s,[r,c],to),k=king(n,side);if(k&&!attacked(n,k[0],k[1],side==='w'?'b':'w'))out.push({from:[r,c],to});}return out;}
+  const check=s=>{const k=king(s,s.turn);return k&&attacked(s,k[0],k[1],s.turn==='w'?'b':'w')};
+  function notation(m,s){const p=s.board[m.from[0]][m.from[1]];const target=s.board[m.to[0]][m.to[1]];const capture=target||(p[1]==='P'&&m.from[1]!==m.to[1]);return icons[p]+coord(m.from)+(capture?'×':'–')+coord(m.to)+(p[1]==='P'&&(m.to[0]===0||m.to[0]===7)?'=♕':'');}
+  function render(){const board=document.querySelector('#board');board.innerHTML='';const legalFor=selected?legal(state).filter(m=>m.from[0]===selected[0]&&m.from[1]===selected[1]):[];for(let r=0;r<8;r++)for(let c=0;c<8;c++){let p=state.board[r][c],btn=document.createElement('button');btn.className='sq '+((r+c)%2?'dark':'light');btn.setAttribute('aria-label',p?`${coord([r,c])} ${p[0]==='w'?'白':'黑'}${p[1]}`:coord([r,c]));if(selected?.[0]===r&&selected?.[1]===c)btn.classList.add('selected');let lm=legalFor.find(m=>m.to[0]===r&&m.to[1]===c);if(lm)btn.classList.add(p?'capture':'legal');if(state.last&&(state.last.from[0]===r&&state.last.from[1]===c||state.last.to[0]===r&&state.last.to[1]===c))btn.classList.add('last');if(p)btn.innerHTML=`<span class="piece ${p[0]==='w'?'white':'black'}">${icons[p]}</span>`;btn.onclick=()=>click(r,c);board.append(btn)}
+    const all=legal(state),inCheck=check(state),ended=!all.length;let msg=ended?(inCheck?`${state.turn==='w'?'黑方':'白方'}将死，${state.turn==='w'?'黑方':'白方'}获胜！`:'和棋：无合法走法。'):`<span class="turn-dot ${state.turn==='b'?'black':''}"></span>${state.turn==='w'?'白方':'黑方'}走棋${inCheck?' · 将军！':''}`;if(thinking)msg='电脑正在思考…';document.querySelector('#status').innerHTML=msg;document.querySelector('#moveCount').textContent=`${Math.ceil(notes.length/2)} 回合`;document.querySelector('#history').innerHTML=notes.length?notes.map((n,i)=>`<div>${i%2===0?Math.floor(i/2)+1+'. ':''}${n}</div>`).join(''):'<div>棋局准备就绪。</div>';
+  }
+  function click(r,c){if(thinking||!legal(state).length||(mode==='bot'&&state.turn==='b'))return;const p=state.board[r][c];if(selected){const m=legal(state).find(x=>x.from[0]===selected[0]&&x.from[1]===selected[1]&&x.to[0]===r&&x.to[1]===c);if(m){move(m);return}}if(p?.[0]===state.turn)selected=[r,c];else selected=null;render();}
+  function move(m){const note=notation(m,state);history.push(clone(state));notes.push(note);state=apply(state,m.from,m.to);state.last=m;selected=null;render();if(mode==='bot'&&state.turn==='b'&&legal(state).length){thinking=true;render();setTimeout(computer,420)}}
+  function score(s){let total=0;for(const row of s.board)for(const p of row)if(p)total+=(p[0]==='b'?1:-1)*value[p[1]];return total;}
+  function computer(){const options=legal(state);if(!options.length){thinking=false;render();return}let ranked=options.map(m=>({m,n:apply(state,m.from,m.to)})).map(x=>({...x,score:score(x.n)+(Math.random()*35)})).sort((a,b)=>b.score-a.score);thinking=false;move(ranked[Math.floor(Math.random()*Math.min(4,ranked.length))].m);}
+  function reset(){state=initial();selected=null;moves=[];history=[];notes=[];thinking=false;render();}
+  document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));reset()});document.querySelector('#restart').onclick=reset;document.querySelector('#undo').onclick=()=>{if(!history.length||thinking)return;if(mode==='bot'&&history.length>=2){state=history[history.length-2];history.length-=2;notes.length-=2}else{state=history.pop();notes.pop()}selected=null;render()};render();
+})();
+</script>
+</body>
+</html>
